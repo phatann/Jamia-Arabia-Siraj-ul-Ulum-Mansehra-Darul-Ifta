@@ -3,6 +3,8 @@ import { Category, Fatwa } from './types';
 export const APP_NAME_URDU = "جامعہ عربیہ سراج العلوم مانسہرہ";
 export const APP_NAME_ENG = "Jamia Arabia Siraj-ul-Ulum Mansehra";
 export const APP_DESCRIPTION = "The Online Darul-Ifta";
+export const CONTACT_PHONE = "+92 316 5798851";
+export const LOGO_PATH = "/logo.png"; // Expects file in public folder
 
 export const MOCK_FATWAS: Fatwa[] = [
   {

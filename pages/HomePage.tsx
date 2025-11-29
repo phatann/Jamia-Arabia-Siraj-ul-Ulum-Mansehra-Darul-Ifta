@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { MOCK_FATWAS, CATEGORIES } from '../constants';
 import FatwaCard from '../components/FatwaCard';
-import { ArrowRight, Book } from 'lucide-react';
+import { ArrowRight, Book, Star } from 'lucide-react';
 
 const HomePage: React.FC = () => {
   const featuredFatwas = MOCK_FATWAS.filter(f => f.featured).slice(0, 3);
@@ -10,71 +10,104 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
-      <section className="bg-primary-800 text-white relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10 pattern-islamic"></div>
-        <div className="container mx-auto px-4 py-16 md:py-24 relative z-10 text-center">
-          <div className="inline-block p-2 px-4 rounded-full bg-primary-700/50 border border-primary-600 text-primary-100 text-sm font-medium mb-6 backdrop-blur-sm">
-            Welcome to the Online Darul Ifta
+      {/* Hero Section - Classic White/Maroon Style */}
+      <section className="bg-white relative overflow-hidden border-b border-gray-200">
+        <div className="absolute inset-0 opacity-5 pattern-islamic"></div>
+        <div className="container mx-auto px-4 py-16 md:py-20 relative z-10">
+          <div className="flex flex-col md:flex-row items-center justify-between">
+            <div className="md:w-1/2 text-center md:text-left mb-8 md:mb-0">
+                <div className="inline-block px-3 py-1 bg-primary-50 text-primary-800 text-xs font-bold uppercase tracking-widest mb-4 border border-primary-100 rounded">
+                    Darul Ifta Online
+                </div>
+                <h1 className="text-4xl md:text-6xl font-serif font-bold text-gray-900 mb-6 leading-tight">
+                    Guidance from the <br />
+                    <span className="text-primary-700">Light of Knowledge</span>
+                </h1>
+                <p className="text-lg text-gray-600 mb-8 max-w-xl leading-relaxed">
+                    Authentic Islamic rulings derived from the Quran and Sunnah by qualified Muftis of Jamia Arabia Siraj-ul-Ulum Mansehra.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                    <Link 
+                    to="/ask" 
+                    className="bg-primary-700 hover:bg-primary-800 text-white px-8 py-3 rounded shadow-sm font-semibold text-lg transition-all hover:shadow-md flex items-center justify-center"
+                    >
+                    Ask a Question
+                    </Link>
+                    <Link 
+                    to="/browse" 
+                    className="bg-white hover:bg-gray-50 text-primary-800 border-2 border-primary-100 hover:border-primary-300 px-8 py-3 rounded font-semibold text-lg transition-all flex items-center justify-center"
+                    >
+                    Search Fatwas
+                    </Link>
+                </div>
+            </div>
+            {/* Decorative Element / Geometric Art */}
+            <div className="md:w-5/12 flex justify-center">
+                <div className="relative w-64 h-64 md:w-80 md:h-80 opacity-90">
+                     <div className="absolute inset-0 border-8 border-primary-50 rounded-full animate-[spin_60s_linear_infinite]"></div>
+                     <div className="absolute inset-4 border-4 border-primary-100 rounded-full border-dashed animate-[spin_40s_linear_infinite_reverse]"></div>
+                     <div className="absolute inset-0 flex items-center justify-center">
+                         <Star className="w-32 h-32 text-primary-100" fill="currentColor" />
+                     </div>
+                </div>
+            </div>
           </div>
-          <h1 className="text-4xl md:text-6xl font-serif font-bold mb-6 leading-tight">
-            Guidance for a <br />
-            <span className="text-accent-400">Righteous Life</span>
-          </h1>
-          <p className="text-lg md:text-xl text-primary-100 mb-8 max-w-2xl mx-auto leading-relaxed">
-            Authentic Islamic rulings derived from the Quran and Sunnah by qualified Muftis of Jamia Arabia Siraj-ul-Ulum Mansehra.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link 
-              to="/ask" 
-              className="bg-accent-500 hover:bg-accent-600 text-white px-8 py-3 rounded-md font-semibold text-lg transition-colors shadow-lg hover:shadow-xl flex items-center justify-center"
-            >
-              Ask a Question
-            </Link>
-            <Link 
-              to="/browse" 
-              className="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-8 py-3 rounded-md font-semibold text-lg transition-colors flex items-center justify-center backdrop-blur-sm"
-            >
-              Browse Fatwas
-            </Link>
-          </div>
-        </div>
-        
-        {/* Decorative curve at bottom */}
-        <div className="absolute bottom-0 left-0 right-0 h-12 bg-gray-50" style={{ clipPath: 'polygon(0 100%, 100% 100%, 100% 0)' }}></div>
-      </section>
-
-      {/* Categories Grid */}
-      <section className="py-12 container mx-auto px-4">
-        <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl md:text-3xl font-serif font-bold text-gray-800">Browse by Category</h2>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {CATEGORIES.map((cat, idx) => (
-            <Link 
-              key={idx} 
-              to={`/browse?category=${encodeURIComponent(cat)}`}
-              className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md hover:border-primary-300 hover:-translate-y-1 transition-all duration-300 text-center group"
-            >
-              <div className="w-12 h-12 mx-auto bg-primary-50 rounded-full flex items-center justify-center text-primary-600 mb-3 group-hover:bg-primary-600 group-hover:text-white transition-colors">
-                <Book className="w-6 h-6" />
-              </div>
-              <h3 className="font-semibold text-gray-700 group-hover:text-primary-700">{cat}</h3>
-            </Link>
-          ))}
         </div>
       </section>
 
       {/* Featured & Latest Section */}
-      <section className="py-12 bg-white border-t border-gray-200">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col lg:flex-row gap-12">
+      <section className="py-12 container mx-auto px-4">
+        <div className="flex flex-col lg:flex-row gap-12">
             
+            {/* Sidebar: Categories & Important */}
+            <div className="lg:w-1/3 space-y-8">
+               {/* Categories */}
+               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                  <h3 className="text-xl font-serif font-bold text-primary-900 mb-4 pb-2 border-b border-gray-100">
+                      Fatwa Categories
+                  </h3>
+                  <div className="grid grid-cols-1 gap-2">
+                    {CATEGORIES.map((cat, idx) => (
+                        <Link 
+                        key={idx} 
+                        to={`/browse?category=${encodeURIComponent(cat)}`}
+                        className="flex items-center p-3 rounded hover:bg-primary-50 hover:text-primary-700 text-gray-700 transition-colors group"
+                        >
+                        <span className="w-2 h-2 bg-primary-200 rounded-full mr-3 group-hover:bg-primary-600 transition-colors"></span>
+                        {cat}
+                        </Link>
+                    ))}
+                  </div>
+               </div>
+
+               {/* Important Rulings */}
+               <div className="bg-primary-900 rounded-lg p-6 text-white shadow-lg">
+                <h3 className="text-xl font-serif font-bold mb-6 flex items-center text-accent-100">
+                  <Star className="w-5 h-5 mr-2 text-accent-500" fill="currentColor" />
+                  Featured Rulings
+                </h3>
+                <div className="space-y-6">
+                  {featuredFatwas.map(fatwa => (
+                    <div key={fatwa.id} className="border-b border-primary-800 pb-4 last:border-0 last:pb-0">
+                      <Link to={`/fatwa/${fatwa.id}`} className="block group">
+                        <span className="text-xs text-accent-400 font-semibold uppercase tracking-wider">{fatwa.category}</span>
+                        <h4 className="font-medium text-white group-hover:text-accent-200 transition-colors mt-1">
+                          {fatwa.questionTitle}
+                        </h4>
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
             {/* Main Content: Latest Fatwas */}
             <div className="lg:w-2/3">
-              <div className="flex items-center justify-between mb-8">
-                <h2 className="text-2xl md:text-3xl font-serif font-bold text-gray-800 border-l-4 border-accent-500 pl-4">Latest Fatwas</h2>
-                <Link to="/browse" className="text-primary-600 hover:text-primary-800 font-medium flex items-center text-sm">
+              <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-200">
+                <h2 className="text-2xl md:text-3xl font-serif font-bold text-gray-800">
+                    Latest Questions
+                </h2>
+                <Link to="/browse" className="text-primary-700 hover:text-primary-900 font-medium flex items-center text-sm border border-primary-100 px-4 py-2 rounded hover:bg-primary-50 transition-colors">
                   View All <ArrowRight className="w-4 h-4 ml-1" />
                 </Link>
               </div>
@@ -86,38 +119,7 @@ const HomePage: React.FC = () => {
               </div>
             </div>
 
-            {/* Sidebar: Featured/Important */}
-            <div className="lg:w-1/3">
-              <div className="bg-primary-50 rounded-xl p-6 border border-primary-100 sticky top-24">
-                <h3 className="text-xl font-serif font-bold text-primary-900 mb-6 flex items-center">
-                  <span className="w-2 h-2 bg-accent-500 rounded-full mr-2"></span>
-                  Important Rulings
-                </h3>
-                <div className="space-y-6">
-                  {featuredFatwas.map(fatwa => (
-                    <div key={fatwa.id} className="border-b border-primary-200 pb-4 last:border-0 last:pb-0">
-                      <Link to={`/fatwa/${fatwa.id}`} className="block group">
-                        <span className="text-xs text-primary-600 font-semibold uppercase tracking-wider">{fatwa.category}</span>
-                        <h4 className="font-medium text-gray-800 group-hover:text-primary-700 transition-colors mt-1">
-                          {fatwa.questionTitle}
-                        </h4>
-                      </Link>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="mt-8 pt-6 border-t border-primary-200">
-                   <div className="bg-white p-4 rounded-lg shadow-sm">
-                      <h4 className="font-bold text-gray-800 mb-2">Daily Hadith</h4>
-                      <p className="text-sm text-gray-600 italic">"The best among you are those who have the best manners and character."</p>
-                      <p className="text-xs text-gray-400 mt-2 text-right">- Sahih Bukhari</p>
-                   </div>
-                </div>
-              </div>
-            </div>
-
           </div>
-        </div>
       </section>
     </div>
   );
