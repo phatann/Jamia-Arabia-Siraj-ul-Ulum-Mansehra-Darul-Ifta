@@ -64,3 +64,39 @@ export const findRelatedFatwasWithAI = async (query: string, availableFatwas: st
         return [];
     }
 }
+
+export const getSearchSuggestions = async (partialQuery: string, contextFatwas: string): Promise<string[]> => {
+    if (!apiKey || partialQuery.length < 2) return [];
+
+    try {
+        const prompt = `
+            The user is typing a search query on an Islamic Fatwa website.
+            Current Input: "${partialQuery}"
+            
+            Context (Existing Fatwa Titles): 
+            ${contextFatwas.substring(0, 1500)}
+
+            Based on the input and the context of Islamic jurisprudence (Fiqh), provide 4-5 concise, relevant autocomplete suggestions.
+            Suggestions should be short phrases (2-5 words).
+            
+            Return ONLY a JSON array of strings.
+            Example: ["Prayer times", "Prayer conditions", "Travel prayer rulings"]
+        `;
+
+        const response = await ai.models.generateContent({
+            model: 'gemini-2.5-flash',
+            contents: prompt,
+            config: {
+                responseMimeType: 'application/json',
+                maxOutputTokens: 200,
+            }
+        });
+
+        const text = response.text;
+        if (!text) return [];
+        return JSON.parse(text) as string[];
+    } catch (e) {
+        // Fail silently for autocomplete features to avoid disrupting UX
+        return [];
+    }
+}
