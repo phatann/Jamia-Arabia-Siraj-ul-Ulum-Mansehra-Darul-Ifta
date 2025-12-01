@@ -100,3 +100,36 @@ export const getSearchSuggestions = async (partialQuery: string, contextFatwas: 
         return [];
     }
 }
+
+// New function for AI Sir (Google Search Grounding)
+export const searchAiSir = async (query: string): Promise<{text: string, sources: any[]}> => {
+  if (!apiKey) return { text: "AI Service Unavailable", sources: [] };
+
+  try {
+    const prompt = `
+      User Query: "${query}"
+      
+      You are "AI Sir", an intelligent research assistant for Darul Ifta. 
+      Search for reliable Islamic information, prioritizing Deoband sources (Darul Uloom Deoband, Darul Ifta archives) if possible.
+      
+      Provide a comprehensive answer in Urdu (or English if the query is English).
+      Include references/sources at the end.
+    `;
+
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+      config: {
+        tools: [{ googleSearch: {} }],
+      },
+    });
+
+    const text = response.text || "No results found.";
+    const sources = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
+
+    return { text, sources };
+  } catch (e) {
+    console.error("AI Sir Error:", e);
+    return { text: "An error occurred while searching.", sources: [] };
+  }
+};

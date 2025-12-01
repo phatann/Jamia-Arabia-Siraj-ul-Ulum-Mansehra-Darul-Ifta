@@ -7,7 +7,7 @@ const AskFatwaPage: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    category: CATEGORIES[0],
+    category: CATEGORIES[1].labelUrdu, // Default to first actual category
     title: '',
     details: ''
   });
@@ -22,11 +22,10 @@ const AskFatwaPage: React.FC = () => {
 
   const handleGetAiHelp = async () => {
     if (!formData.details || formData.details.length < 10) return;
-    
     setIsLoading(true);
     const response = await getGeminiResponse(
-      `Question Title: ${formData.title}. Details: ${formData.details}`,
-      "Use typical Hanafi Fiqh methodology if applicable, but keep it general if unsure."
+      `Urdu Question: ${formData.title}. Details: ${formData.details}`,
+      "Answer in Urdu language using Hanafi Fiqh. Keep it brief."
     );
     setAiSuggestion(response);
     setIsLoading(false);
@@ -34,7 +33,6 @@ const AskFatwaPage: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate submission
     setTimeout(() => {
         setIsSubmitted(true);
         window.scrollTo(0,0);
@@ -43,22 +41,22 @@ const AskFatwaPage: React.FC = () => {
 
   if (isSubmitted) {
       return (
-          <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-              <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md w-full text-center">
+          <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4 font-urdu text-center">
+              <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md w-full">
                   <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                       <CheckCircle className="w-8 h-8 text-green-600" />
                   </div>
-                  <h2 className="text-2xl font-bold text-gray-800 mb-2">Question Submitted</h2>
-                  <p className="text-gray-600 mb-6">Your question has been received. Our Muftis will review it and provide an answer via email shortly. Your tracking ID is #TMP-2024</p>
+                  <h2 className="text-2xl font-bold text-gray-800 mb-2">سوال موصول ہو گیا</h2>
+                  <p className="text-gray-600 mb-6 text-lg">آپ کا سوال دارالافتاء کو موصول ہو چکا ہے۔ جواب جلد بذریعہ ای میل ارسال کیا جائے گا۔</p>
                   <button 
                     onClick={() => {
                         setIsSubmitted(false);
-                        setFormData({ name: '', email: '', category: CATEGORIES[0], title: '', details: '' });
+                        setFormData({ name: '', email: '', category: CATEGORIES[1].labelUrdu, title: '', details: '' });
                         setAiSuggestion(null);
                     }}
-                    className="text-primary-600 font-medium hover:underline"
+                    className="text-primary-600 font-bold hover:underline"
                   >
-                      Ask another question
+                      نیا سوال پوچھیں
                   </button>
               </div>
           </div>
@@ -66,23 +64,22 @@ const AskFatwaPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-gray-50 py-12 font-urdu">
       <div className="container mx-auto px-4 max-w-3xl">
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          <div className="bg-primary-800 p-8 text-white">
-            <h1 className="text-3xl font-serif font-bold mb-2">Ask a Question</h1>
-            <p className="text-primary-200">Submit your query for a Shar'i ruling.</p>
+        <div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200">
+          <div className="bg-primary-800 p-8 text-white text-right">
+            <h1 className="text-4xl font-bold mb-2">سوال پوچھیں</h1>
+            <p className="text-primary-200 text-lg">اپنے شرعی مسائل کے حل کے لیے فارم پُر کریں</p>
           </div>
 
           <div className="p-8">
-            <div className="bg-amber-50 border-l-4 border-amber-500 p-4 mb-8">
-              <div className="flex">
-                <AlertCircle className="h-5 w-5 text-amber-500 mr-3 mt-0.5" />
+            <div className="bg-amber-50 border-r-4 border-amber-500 p-4 mb-8 text-right">
+              <div className="flex flex-row-reverse items-start">
+                <AlertCircle className="h-6 w-6 text-amber-500 ml-3 mt-0.5" />
                 <div>
-                  <p className="text-sm text-amber-800 font-medium">Important Note</p>
-                  <p className="text-sm text-amber-700 mt-1">
-                    Please search for similar questions before asking. Be concise and specific.
-                    This service handles religious queries only.
+                  <p className="text-lg text-amber-800 font-bold">ضروری ہدایت</p>
+                  <p className="text-base text-amber-700 mt-1 leading-relaxed">
+                    سوال پوچھنے سے پہلے پرانے فتاویٰ میں تلاش کر لیں۔ سوال واضح لکھیں۔ یہ سروس صرف دینی مسائل کے لیے ہے۔
                   </p>
                 </div>
               </div>
@@ -90,74 +87,81 @@ const AskFatwaPage: React.FC = () => {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                  <input
-                    required
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 border p-2"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                <div className="text-right">
+                  <label className="block text-lg font-bold text-gray-700 mb-1">ای میل</label>
                   <input
                     required
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 border p-2"
+                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 border p-3 text-right"
+                    dir="ltr"
+                  />
+                </div>
+                <div className="text-right">
+                  <label className="block text-lg font-bold text-gray-700 mb-1">نام</label>
+                  <input
+                    required
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 border p-3 text-right"
+                    dir="rtl"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+              <div className="text-right">
+                <label className="block text-lg font-bold text-gray-700 mb-1">کیٹیگری منتخب کریں</label>
                 <select
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 border p-2"
+                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 border p-3 text-right font-urdu text-lg"
+                  dir="rtl"
                 >
-                  {CATEGORIES.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                  {CATEGORIES.filter(c => c.id !== 'all').map(cat => (
+                      <option key={cat.id} value={cat.labelUrdu}>{cat.labelUrdu}</option>
+                  ))}
                 </select>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Question Title</label>
+              <div className="text-right">
+                <label className="block text-lg font-bold text-gray-700 mb-1">عنوان</label>
                 <input
                   required
                   type="text"
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
-                  placeholder="e.g. Ruling on..."
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 border p-2"
+                  placeholder="مثلاً: سفر میں نماز کا حکم..."
+                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 border p-3 text-right"
+                  dir="rtl"
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Details</label>
+              <div className="text-right">
+                <label className="block text-lg font-bold text-gray-700 mb-1">تفصیل</label>
                 <textarea
                   required
                   name="details"
-                  rows={6}
+                  rows={8}
                   value={formData.details}
                   onChange={handleChange}
-                  placeholder="Describe your situation clearly..."
-                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 border p-2"
+                  placeholder="اپنا مسئلہ تفصیل سے بیان کریں..."
+                  className="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 border p-3 text-right font-urdu text-lg leading-loose"
+                  dir="rtl"
                 />
               </div>
 
-              {/* AI Assistance Section */}
-              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                <div className="flex justify-between items-center mb-2">
-                    <h4 className="text-sm font-bold text-gray-700 flex items-center">
-                        <Sparkles className="w-4 h-4 mr-1 text-purple-500"/>
-                        AI Assistant
+              {/* AI Help */}
+              <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 text-right">
+                <div className="flex flex-row-reverse justify-between items-center mb-2">
+                    <h4 className="text-sm font-bold text-gray-700 flex items-center flex-row-reverse">
+                        <Sparkles className="w-4 h-4 ml-1 text-purple-500"/>
+                        AI اسسٹنٹ
                     </h4>
                     {!aiSuggestion && (
                         <button
@@ -166,22 +170,16 @@ const AskFatwaPage: React.FC = () => {
                             disabled={isLoading || formData.details.length < 10}
                             className="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full hover:bg-purple-200 transition-colors disabled:opacity-50"
                         >
-                            {isLoading ? 'Analyzing...' : 'Get Instant Insight'}
+                            {isLoading ? '...انتظار فرمائیں' : 'فوری حوالہ حاصل کریں'}
                         </button>
                     )}
                 </div>
                 
-                {!aiSuggestion && !isLoading && (
-                    <p className="text-xs text-gray-500">
-                        Want an immediate preliminary answer? Click the button above to ask our AI assistant for references before submitting to a Mufti.
-                    </p>
-                )}
-
                 {aiSuggestion && (
-                    <div className="mt-3 text-sm text-gray-700 bg-white p-3 rounded border border-purple-100">
+                    <div className="mt-3 text-lg text-gray-700 bg-white p-4 rounded border border-purple-100 dir-rtl leading-loose">
                         <p className="whitespace-pre-line">{aiSuggestion}</p>
-                        <p className="mt-2 text-xs text-red-500 font-semibold border-t pt-2">
-                            Disclaimer: This is an AI generated response and is NOT a fatwa. Please submit your question for a formal ruling.
+                        <p className="mt-2 text-xs text-red-500 font-bold border-t pt-2">
+                            نوٹ: یہ جواب مصنوعی ذہانت (AI) کا ہے اور حتمی فتویٰ نہیں۔
                         </p>
                     </div>
                 )}
@@ -190,10 +188,10 @@ const AskFatwaPage: React.FC = () => {
               <div className="pt-4">
                 <button
                   type="submit"
-                  className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-700 hover:bg-primary-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
+                  className="w-full flex justify-center py-4 px-4 border border-transparent rounded-md shadow-sm text-lg font-bold text-white bg-primary-700 hover:bg-primary-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
                 >
-                  <Send className="w-4 h-4 mr-2" />
-                  Submit Question to Mufti
+                  <Send className="w-5 h-5 ml-2 mt-1" />
+                  فتویٰ بھیجیں
                 </button>
               </div>
             </form>

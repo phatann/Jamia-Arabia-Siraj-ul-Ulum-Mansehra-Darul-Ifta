@@ -1,67 +1,223 @@
-import { Category, Fatwa } from './types';
+import { CategoryItem, Fatwa } from './types';
 
 export const APP_NAME_URDU = "جامعہ عربیہ سراج العلوم مانسہرہ";
 export const APP_NAME_ENG = "Jamia Arabia Siraj-ul-Ulum Mansehra";
-export const APP_DESCRIPTION = "The Online Darul-Ifta";
+export const APP_DESCRIPTION = "Darul Ifta Online";
 export const CONTACT_PHONE = "+92 316 5798851";
-export const LOGO_PATH = "/logo.png"; // Expects file in public folder
+export const LOGO_PATH = "/logo.png";
 
-export const MOCK_FATWAS: Fatwa[] = [
-  {
-    id: "1001",
-    fatwaNumber: "L-2023-1001",
-    questionTitle: "Ruling on combined prayers during travel",
-    questionDetails: "I am travelling for 3 days. Can I combine Zuhr and Asr prayers together while I am stopping at a rest area?",
-    answer: "In the Hanafi school of thought, combining prayers (Jam' Bayn al-Salatayn) in terms of time (praying one in the time of the other) is not permitted except on the day of Arafah. However, 'Jam' Suwari' (apparent combination) is permitted, where you delay Zuhr until the end of its time and pray Asr at the beginning of its time.",
-    category: Category.PRAYER,
-    date: "2023-10-15",
-    views: 1240,
-    featured: true
-  },
-  {
-    id: "1002",
-    fatwaNumber: "L-2023-1002",
-    questionTitle: "Investing in Stocks",
-    questionDetails: "Is it permissible to invest in the stock market? Specifically technology companies.",
-    answer: "Investing in stocks is permissible subject to certain conditions: 1) The core business of the company must be Halal. 2) The company's income from interest must be minimal and purified. 3) The company must have illiquid assets. Consult a local scholar for specific stock screening.",
-    category: Category.BUSINESS,
-    date: "2023-10-18",
-    views: 3500,
-    featured: true
-  },
-  {
-    id: "1003",
-    fatwaNumber: "L-2023-1003",
-    questionTitle: "Meaning of a dream about rain",
-    questionDetails: "I saw heavy rain in my dream. What does this signify?",
-    answer: "Rain in a dream generally signifies mercy and relief from distress, provided it does not cause destruction. It may also indicate knowledge and wisdom.",
-    category: Category.MISC,
-    date: "2023-11-02",
-    views: 890,
-    featured: false
-  },
-  {
-    id: "1004",
-    fatwaNumber: "L-2023-1004",
-    questionTitle: "Zakat on Gold Jewelry",
-    questionDetails: "My wife has gold jewelry that she wears occasionally. Is Zakat due on it?",
-    answer: "According to the Hanafi Madhhab, Zakat is obligatory on gold and silver jewelry regardless of whether it is worn or not, provided it reaches the Nisab threshold (87.48 grams of gold).",
-    category: Category.ZAKAT,
-    date: "2023-11-05",
-    views: 5600,
-    featured: true
-  },
-  {
-    id: "1005",
-    fatwaNumber: "L-2023-1005",
-    questionTitle: "Nikah over video call",
-    questionDetails: "Can a Nikah be performed over a video call if the groom is in another country?",
-    answer: "For a valid Nikah, the physical presence of the witnesses and the contracting parties (or their proxies) in one gathering (Majlis) is a condition. A digital video call does not constitute a single Majlis in the physical sense. Therefore, the groom should appoint a proxy (Wakil) who is physically present at the gathering to contract the marriage on his behalf.",
-    category: Category.MARRIAGE,
-    date: "2023-12-01",
-    views: 4200,
-    featured: false
-  }
+// Standard Deoband-style Categories matching the URL structure
+export const CATEGORIES: CategoryItem[] = [
+  { id: 'all', labelUrdu: 'تمام فتاویٰ', labelEnglish: 'All Fatwas' },
+  { id: 'imaniyat', labelUrdu: 'ایمانیات و عقائد', labelEnglish: 'Islamic Beliefs' },
+  { id: 'taharah', labelUrdu: 'طہارت و پاکیزگی', labelEnglish: 'Purification' },
+  { id: 'salah', labelUrdu: 'نماز', labelEnglish: 'Prayer' },
+  { id: 'zakat', labelUrdu: 'زکوٰۃ و صدقات', labelEnglish: 'Zakat & Charity' },
+  { id: 'sawm', labelUrdu: 'روزہ', labelEnglish: 'Fasting' },
+  { id: 'hajj', labelUrdu: 'حج و عمرہ', labelEnglish: 'Hajj & Umrah' },
+  { id: 'nikah', labelUrdu: 'نکاح و طلاق', labelEnglish: 'Marriage & Divorce' },
+  { id: 'buyoo', labelUrdu: 'خرید و فروخت', labelEnglish: 'Business & Trade' },
+  { id: 'miras', labelUrdu: 'فرائض و وراثت', labelEnglish: 'Inheritance' },
+  { id: 'halal_haram', labelUrdu: 'حلال و حرام', labelEnglish: 'Halal & Haram' },
+  { id: 'bidaat', labelUrdu: 'بدعات و رسومات', labelEnglish: 'Innovations & Customs' },
+  { id: 'seerat', labelUrdu: 'سیرت و تاریخ', labelEnglish: 'Seerah & History' },
+  { id: 'miscellaneous', labelUrdu: 'متفرق مسائل', labelEnglish: 'Miscellaneous' },
 ];
 
-export const CATEGORIES = Object.values(Category);
+export const MOCK_FATWAS: Fatwa[] = [
+  // --- IMANIYAT (Beliefs) - Mimicking /islamic-beliefs/1 ---
+  {
+    id: "2001",
+    fatwaNumber: "1445-2001/Aq",
+    questionTitle: "اللہ تعالیٰ کے بارے میں 'ہر جگہ موجود ہے' کہنا",
+    questionDetails: "کیا اللہ تعالیٰ کے بارے میں یہ عقیدہ رکھنا درست ہے کہ وہ ہر جگہ موجود ہے؟",
+    answer: "اللہ تعالیٰ کے بارے میں یہ عقیدہ رکھنا کہ وہ بذاتہ ہر جگہ موجود ہے، جمہور اہل سنت والجماعت کے نزدیک درست نہیں ہے۔ صحیح عقیدہ یہ ہے کہ اللہ تعالیٰ عرش پر مستوی ہے جیسا کہ اس کی شان کے لائق ہے، لیکن اس کا علم، قدرت اور احاطہ ہر جگہ ہے۔ 'ہر جگہ موجود ہونے' سے مراد اگر علم اور قدرت لی جائے تو درست ہے۔",
+    category: "ایمانیات و عقائد",
+    date: "10 محرم 1445",
+    views: 5420,
+    featured: true,
+    references: ["شرح العقائد النسفیۃ: 112", "فتاویٰ محمودیہ: 1/250"],
+    muftiName: "مفتی عبدالرحمٰن"
+  },
+  {
+    id: "2002",
+    fatwaNumber: "1445-2002/Aq",
+    questionTitle: "وسوسوں سے ایمان پر اثر",
+    questionDetails: "مجھے دل میں کفریہ خیالات اور وسوسے آتے ہیں، کیا اس سے میرا ایمان ختم ہو جاتا ہے؟ میں بہت پریشان ہوں۔",
+    answer: "دل میں برے خیالات اور وسوسوں کا آنا اس بات کی دلیل ہے کہ دل میں ایمان موجود ہے، کیونکہ چور وہیں آتا ہے جہاں مال ہو۔ ان وسوسوں سے ایمان پر کوئی اثر نہیں پڑتا جب تک کہ انسان زبان سے ان کا اقرار نہ کرے یا ان پر یقین نہ کر لے۔ حدیث شریف میں اسے 'صریح ایمان' کہا گیا ہے۔ ان خیالات کو جھٹک دیں اور 'لا حول ولا قوۃ الا باللہ' کا ورد کریں۔",
+    category: "ایمانیات و عقائد",
+    date: "15 صفر 1445",
+    views: 8900,
+    featured: true,
+    references: ["صحیح مسلم: کتاب الایمان", "مشکوٰۃ المصابیح: 1/66"],
+    muftiName: "مفتی محمد شعیب"
+  },
+  {
+    id: "2003",
+    fatwaNumber: "1445-2003/Aq",
+    questionTitle: "جادو اور نظر بد کی حقیقت",
+    questionDetails: "کیا اسلام میں جادو اور نظر بد کی کوئی حقیقت ہے؟ اور اس کا شرعی علاج کیا ہے؟",
+    answer: "جادو اور نظر بد برحق ہیں اور قرآن و حدیث سے ثابت ہیں۔ اللہ کے نبی صلی اللہ علیہ وسلم پر بھی جادو کا اثر ہوا تھا۔ اس کا بہترین علاج معوذتین (سورہ فلق اور سورہ ناس) اور آیت الکرسی پڑھ کر دم کرنا ہے۔ جادوگروں اور عاملوں کے پاس جانے سے گریز کریں جو شرکیہ کلمات استعمال کرتے ہیں۔",
+    category: "ایمانیات و عقائد",
+    date: "22 ربیع الاول 1445",
+    views: 6700,
+    featured: false,
+    references: ["سورۃ البقرہ: 102", "صحیح بخاری: 5763"],
+    muftiName: "مفتی احمد خان"
+  },
+  {
+    id: "2004",
+    fatwaNumber: "1445-2004/Aq",
+    questionTitle: "غیر اللہ کی قسم کھانا",
+    questionDetails: "کیا والدین یا بچوں کی قسم کھانا جائز ہے؟",
+    answer: "غیر اللہ (اللہ کے سوا کسی اور) کی قسم کھانا شرعاً حرام ہے اور حدیث میں اسے شرک (اصغر) کہا گیا ہے۔ قسم صرف اللہ کے نام کی یا اس کی صفات کی کھائی جا سکتی ہے۔ اگر کسی نے غیر اللہ کی قسم کھائی تو وہ قسم منعقد نہیں ہوتی اور اس کا کفارہ نہیں، لیکن توبہ و استغفار ضروری ہے۔",
+    category: "ایمانیات و عقائد",
+    date: "05 ربیع الثانی 1445",
+    views: 3200,
+    featured: false,
+    references: ["سنن ابی داؤد: 3251", "ترمذی: 1535"],
+    muftiName: "مفتی سعید انور"
+  },
+  {
+    id: "2005",
+    fatwaNumber: "1445-2005/Aq",
+    questionTitle: "تقدیر پر ایمان",
+    questionDetails: "اگر سب کچھ تقدیر میں لکھا ہے تو انسان اپنے اعمال کا ذمہ دار کیسے ہے؟",
+    answer: "تقدیر پر ایمان لانا ضروری ہے۔ اللہ تعالیٰ نے اپنے علمِ ازلی سے لکھ دیا ہے کہ بندہ کیا کرے گا، لیکن بندے کو اللہ نے اختیار (Will) اور ارادہ دیا ہے۔ انسان مجبورِ محض نہیں ہے۔ اللہ نے نیکی اور بدی کے دونوں راستے دکھا دیے ہیں۔ انسان اپنے اسی اختیار کے استعمال پر جزا یا سزا کا مستحق ہوتا ہے۔",
+    category: "ایمانیات و عقائد",
+    date: "12 جمادی الاول 1445",
+    views: 4500,
+    featured: true,
+    references: ["شرح العقائد: 78", "مرقاۃ المفاتیح: 1/115"],
+    muftiName: "مفتی عبداللہ"
+  },
+  {
+    id: "2006",
+    fatwaNumber: "1445-2006/Aq",
+    questionTitle: "حیات النبی صلی اللہ علیہ وسلم",
+    questionDetails: "انبیاء کرام علیہم السلام کی قبروں میں حیات کے بارے میں کیا عقیدہ ہونا چاہیے؟",
+    answer: "انبیاء کرام علیہم السلام اپنی قبروں میں جسمانی طور پر زندہ ہیں اور انہیں رزق دیا جاتا ہے۔ ان کی یہ حیات دنیاوی حیات سے زیادہ قوی اور برزخی نوعیت کی ہے جسے ہم پوری طرح نہیں سمجھ سکتے۔ یہ اہل سنت والجماعت کا متفقہ عقیدہ ہے۔",
+    category: "ایمانیات و عقائد",
+    date: "18 جمادی الثانی 1445",
+    views: 7100,
+    featured: true,
+    references: ["فتاویٰ شامی: 2/250", "المہند علی المفند: 12"],
+    muftiName: "مفتی محمد زبیر"
+  },
+  
+  // --- SALAH (Prayer) ---
+  {
+    id: "3001",
+    fatwaNumber: "1445-3001/Sal",
+    questionTitle: "دوران سفر نماز قصر کا حکم",
+    questionDetails: "کیا فرماتے ہیں علمائے دین اس مسئلہ کے بارے میں کہ میں مانسہرہ سے کراچی سفر کر رہا ہوں، کیا مجھے راستے میں پوری نماز پڑھنی ہوگی یا قصر؟ اور قصر کی مسافت کتنی ہے؟",
+    answer: "مسافر جب 48 میل (تقریباً 77.25 کلومیٹر) یا اس سے زیادہ کے ارادے سے اپنے شہر کی حدود سے نکل جائے تو وہ شرعی مسافر ہے، اس پر چار رکعت والی فرض نماز (ظہر، عصر، عشاء) کو دو رکعت پڑھنا واجب ہے۔ اگر پوری پڑھے گا تو گنہگار ہوگا۔ یہ حکم اس وقت تک رہے گا جب تک وہ اپنے شہر واپس نہ آجائے یا کسی شہر میں 15 دن قیام کی نیت نہ کر لے۔",
+    category: "نماز",
+    date: "14 جمادی الاول 1445",
+    views: 1240,
+    featured: true,
+    references: ["الدر المختار مع رد المحتار: 2/121", "الفتاویٰ الہندیہ: 1/139"],
+    muftiName: "مفتی عبدالرحمٰن"
+  },
+  {
+    id: "3002",
+    fatwaNumber: "1445-3002/Sal",
+    questionTitle: "کرسی پر نماز پڑھنے کا طریقہ",
+    questionDetails: "کیا جوڑوں کے درد کی وجہ سے کرسی پر بیٹھ کر نماز پڑھی جا سکتی ہے؟",
+    answer: "اگر کوئی شخص کھڑے ہونے یا سجدہ کرنے پر بالکل قادر نہ ہو، یا بیماری بڑھنے کا شدید خطرہ ہو، تو وہ کرسی پر بیٹھ کر اشارے سے نماز پڑھ سکتا ہے۔ لیکن اگر قیام پر قادر ہے تو قیام کرنا فرض ہے، صرف سجدہ اشارے سے کرے۔ بلاوجہ کرسی پر نماز پڑھنا جائز نہیں ہے۔",
+    category: "نماز",
+    date: "22 رجب 1445",
+    views: 3100,
+    featured: false,
+    references: ["البحر الرائق: 2/115"],
+    muftiName: "مفتی احمد خان"
+  },
+
+  // --- BUSINESS ---
+  {
+    id: "4001",
+    fatwaNumber: "1445-4001/Bus",
+    questionTitle: "بینک کے منافع کا استعمال",
+    questionDetails: "میرا سیونگ اکاؤنٹ ہے جس پر بینک مجھے ماہانہ منافع دیتا ہے۔ کیا یہ منافع میرے لیے حلال ہے؟ برائے مہربانی قرآن و سنت کی روشنی میں رہنمائی فرمائیں۔",
+    answer: "مروجہ بینکوں کے سیونگ اکاؤنٹ پر ملنے والا منافع 'سود' کے زمرے میں آتا ہے جو کہ نصوصِ قطعیہ سے حرام ہے۔ قرآن کریم میں اللہ تعالیٰ نے سود کو اللہ اور اس کے رسول کے خلاف جنگ قرار دیا ہے۔ لہٰذا یہ رقم خود استعمال کرنا جائز نہیں، اسے بلانیتِ ثواب غرباء میں تقسیم کرنا ضروری ہے۔",
+    category: "خرید و فروخت",
+    date: "18 جمادی الاول 1445",
+    views: 3500,
+    featured: true,
+    references: ["سورۃ البقرہ: 275", "صحیح مسلم: 1598", "شامی: 5/240"],
+    muftiName: "مفتی محمد شعیب"
+  },
+  {
+    id: "4002",
+    fatwaNumber: "1445-4002/Bus",
+    questionTitle: "قسطوں پر چیز خریدنا",
+    questionDetails: "کیا نقد قیمت سے زیادہ قیمت پر ادھار (قسطوں پر) چیز بیچنا جائز ہے؟",
+    answer: "اگر سودا کرتے وقت قیمت اور قسطوں کی مدت طے ہو جائے اور بعد میں قیمت میں کوئی اضافہ نہ کیا جائے (چاہے قسط لیٹ ہو جائے)، تو نقد کے مقابلے میں ادھار مہنگا بیچنا جائز ہے۔ یہ سود نہیں بلکہ 'بیع' کی ایک صورت ہے۔",
+    category: "خرید و فروخت",
+    date: "11 شعبان 1445",
+    views: 2800,
+    featured: false,
+    references: ["بدائع الصنائع: 5/158", "فتاویٰ عثمانی: 3/120"],
+    muftiName: "مفتی سعید انور"
+  },
+
+  // --- NIKAH ---
+  {
+    id: "5001",
+    fatwaNumber: "1445-5001/Nik",
+    questionTitle: "فون پر نکاح کا حکم",
+    questionDetails: "لڑکا امریکہ میں ہے اور لڑکی پاکستان میں۔ کیا ویڈیو کال یا فون پر نکاح منعقد ہو سکتا ہے؟",
+    answer: "نکاح کے صحیح ہونے کے لیے ایجاب و قبول کے وقت مجلس کا ایک ہونا شرط ہے۔ فون یا ویڈیو کال پر فریقین کا مقام الگ الگ ہوتا ہے لہٰذا مجلس ایک نہیں ہوتی، اس لیے براہِ راست کال پر نکاح منعقد نہیں ہوتا۔ اس کا صحیح طریقہ یہ ہے کہ لڑکا پاکستان میں کسی کو اپنا وکیل بنائے، پھر وہ وکیل مجلسِ نکاح میں گواہوں کے سامنے لڑکے کی طرف سے ایجاب کرے تو نکاح درست ہو جائے گا۔",
+    category: "نکاح و طلاق",
+    date: "02 جمادی الثانی 1445",
+    views: 4200,
+    featured: true,
+    references: ["بدائع الصنائع: 2/231", "فتاویٰ محمودیہ: 11/150"],
+    muftiName: "مفتی احمد خان"
+  },
+
+  // --- ZAKAT ---
+  {
+    id: "6001",
+    fatwaNumber: "1445-6001/Zak",
+    questionTitle: "استعمال کے زیورات پر زکوٰۃ",
+    questionDetails: "میری بیوی کے پاس سونے کے زیورات ہیں جو وہ استعمال کرتی ہے۔ کیا استعمال کے زیورات پر بھی زکوٰۃ فرض ہے؟",
+    answer: "حنفی مسلک کے مطابق سونے اور چاندی کے زیورات پر زکوٰۃ فرض ہے، خواہ وہ استعمال میں ہوں یا نہ ہوں، بشرطیکہ وہ نصاب (ساڑھے سات تولہ سونا یا ساڑھے باون تولہ چاندی) کو پہنچ جائیں۔ لہٰذا آپ کی اہلیہ کے زیورات اگر نصاب کو پہنچتے ہیں تو ان کی موجودہ مارکیٹ ویلیو پر ڈھائی فیصد زکوٰۃ ادا کرنا لازم ہے۔",
+    category: "زکوٰۃ و صدقات",
+    date: "05 جمادی الثانی 1445",
+    views: 5600,
+    featured: false,
+    references: ["ہدایہ: 1/185", "سنن ابی داؤد: 1556"],
+    muftiName: "مفتی سعید انور"
+  },
+
+  // --- TAHARAH ---
+  {
+    id: "7001",
+    fatwaNumber: "1445-7001/Tah",
+    questionTitle: "ناپاک کپڑے پاک کرنے کا طریقہ",
+    questionDetails: "واشنگ مشین میں ناپاک کپڑے پاک کرنے کا شرعی طریقہ کیا ہے؟",
+    answer: "واشنگ مشین میں کپڑے پاک کرنے کا طریقہ یہ ہے کہ پہلے ناپاکی کو اچھی طرح دھو لیا جائے، پھر مشین میں ڈال کر اتنا پانی بہایا جائے کہ نجاست کا اثر (رنگ، بو، ذائقہ) ختم ہو جائے اور پانی صاف ہو جائے۔ اگر خودکار (آٹومیٹک) مشین ہے جو تین بار پانی نکالتی ہے اور نچوڑتی ہے تو اس سے بھی کپڑے پاک ہو جاتے ہیں۔",
+    category: "طہارت و پاکیزگی",
+    date: "12 رجب 1445",
+    views: 890,
+    featured: false,
+    references: ["بہشتی زیور: 1/45", "رد المحتار: 1/332"],
+    muftiName: "مفتی عبداللہ"
+  },
+  
+  // --- BID'AT ---
+  {
+    id: "8001",
+    fatwaNumber: "1445-8001/Bid",
+    questionTitle: "میت کے ایصال ثواب کے لیے قرآن خوانی",
+    questionDetails: "کیا میت کے لیے اجتماعی قرآن خوانی کرنا اور اس پر کھانا کھلانا جائز ہے؟",
+    answer: "میت کے لیے ایصالِ ثواب کرنا جائز بلکہ مستحسن عمل ہے، چاہے وہ قرآن پڑھ کر ہو، صدقہ کر کے ہو یا دعا کے ذریعے۔ البتہ اس کے لیے کوئی خاص دن (جیسے تیجہ، چالیسواں) مقرر کرنا اور اسے لازم سمجھنا بدعت ہے۔ اسی طرح تعزیت کے موقع پر کھانے کا انتظام کرنا اہلِ میت کے لیے بوجھ ہے، یہ مکروہ ہے۔ ہاں پڑوسیوں یا رشتہ داروں کا اہلِ میت کے لیے کھانا لانا سنت ہے۔",
+    category: "بدعات و رسومات",
+    date: "20 رجب 1445",
+    views: 2100,
+    featured: true,
+    references: ["فتح القدیر: 2/102", "شرح الصدور: 310"],
+    muftiName: "مفتی محمد زبیر"
+  }
+];

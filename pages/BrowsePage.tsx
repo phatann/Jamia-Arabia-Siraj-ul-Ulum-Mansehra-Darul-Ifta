@@ -1,94 +1,91 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { Search, Filter, Sparkles, Clock } from 'lucide-react';
-import { MOCK_FATWAS, CATEGORIES } from '../constants';
+import { useSearchParams, Link } from 'react-router-dom';
+import { Filter, Sparkles, ChevronLeft, Home } from 'lucide-react';
+import { CATEGORIES } from '../constants';
 import FatwaCard from '../components/FatwaCard';
 import { Fatwa } from '../types';
 import { findRelatedFatwasWithAI, getSearchSuggestions } from '../services/geminiService';
+import { useApp } from '../context/AppContext';
 
 const BrowsePage: React.FC = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
+  const { fatwas: allFatwas, language, t } = useApp(); // Use data from Context
+  
   const initialCategory = searchParams.get('category') || 'All';
   const initialQuery = searchParams.get('q') || '';
 
   const [selectedCategory, setSelectedCategory] = useState(initialCategory);
   const [searchQuery, setSearchQuery] = useState(initialQuery);
-  const [filteredFatwas, setFilteredFatwas] = useState<Fatwa[]>(MOCK_FATWAS);
+  const [filteredFatwas, setFilteredFatwas] = useState<Fatwa[]>(allFatwas);
   const [isSearchingAI, setIsSearchingAI] = useState(false);
-
-  // Autocomplete State
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const skipSuggestionFetch = useRef(false);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   useEffect(() => {
     filterFatwas();
-  }, [selectedCategory]);
+  }, [selectedCategory, allFatwas]); // Re-run if data changes
 
-  // Debounced Autocomplete
   useEffect(() => {
     const fetchSuggestions = async () => {
       if (skipSuggestionFetch.current) {
         skipSuggestionFetch.current = false;
         return;
       }
-
       if (!searchQuery || searchQuery.length < 3) {
         setSuggestions([]);
         return;
       }
-
-      const context = MOCK_FATWAS.map(f => f.questionTitle).join(", ");
+      const context = allFatwas.map(f => f.questionTitle).join(", ");
       const results = await getSearchSuggestions(searchQuery, context);
-      
       if (results && results.length > 0) {
         setSuggestions(results);
         setShowSuggestions(true);
       }
     };
-
-    const timer = setTimeout(fetchSuggestions, 500); // 500ms debounce
+    const timer = setTimeout(fetchSuggestions, 500);
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
   const filterFatwas = (queryOverride?: string) => {
-    let result = MOCK_FATWAS;
+    let result = allFatwas;
     const queryToUse = queryOverride !== undefined ? queryOverride : searchQuery;
     
-    if (selectedCategory !== 'All') {
+    // Filter by Category
+    if (selectedCategory !== 'All' && selectedCategory !== 'تمام فتاویٰ') {
       result = result.filter(f => f.category === selectedCategory);
     }
     
+    // Filter by Query
     if (queryToUse) {
       const lowerQ = queryToUse.toLowerCase();
       result = result.filter(f => 
-        f.questionTitle.toLowerCase().includes(lowerQ) || 
-        f.questionDetails.toLowerCase().includes(lowerQ) ||
-        f.answer.toLowerCase().includes(lowerQ)
+        f.questionTitle.includes(queryToUse) || 
+        f.questionDetails.includes(queryToUse) ||
+        f.fatwaNumber.toLowerCase().includes(lowerQ)
       );
     }
     
     setFilteredFatwas(result);
+    setCurrentPage(1);
   };
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     setShowSuggestions(false);
-    
-    // Basic filter first
     filterFatwas();
 
-    // AI Enhanced Search if query exists
     if (searchQuery.length > 3) {
         setIsSearchingAI(true);
-        const fatwaListString = MOCK_FATWAS.map(f => `ID: ${f.id}, Title: ${f.questionTitle}`).join('\n');
+        const fatwaListString = allFatwas.map(f => `ID: ${f.id}, Title: ${f.questionTitle}`).join('\n');
         const relevantIds = await findRelatedFatwasWithAI(searchQuery, fatwaListString);
         
         if (relevantIds.length > 0) {
-            // Re-order fatwas to put AI matches first
-            const matches = MOCK_FATWAS.filter(f => relevantIds.includes(f.id));
+            const matches = allFatwas.filter(f => relevantIds.includes(f.id));
             const others = filteredFatwas.filter(f => !relevantIds.includes(f.id));
-            // Remove duplicates from others that are in matches
             const uniqueOthers = others.filter(o => !matches.find(m => m.id === o.id));
             setFilteredFatwas([...matches, ...uniqueOthers]);
         }
@@ -97,128 +94,160 @@ const BrowsePage: React.FC = () => {
   };
 
   const handleSuggestionClick = (suggestion: string) => {
-    skipSuggestionFetch.current = true; // Prevent re-fetching suggestions for the full phrase
+    skipSuggestionFetch.current = true;
     setSearchQuery(suggestion);
     setShowSuggestions(false);
-    filterFatwas(suggestion); // Trigger search immediately with the suggestion
+    filterFatwas(suggestion);
   };
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredFatwas.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredFatwas.length / itemsPerPage);
+
+  const isUrdu = language === 'ur';
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className={`min-h-screen bg-white py-8 ${isUrdu ? 'font-urdu' : 'font-sans'}`}>
       <div className="container mx-auto px-4">
         
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-          <h1 className="text-3xl font-serif font-bold text-gray-800">
-            Browse Fatwas
-          </h1>
-          <div className="text-sm text-gray-500">
-            Showing {filteredFatwas.length} results
-          </div>
+        <div className={`flex items-center gap-2 text-sm text-gray-500 mb-6 border-b border-gray-200 pb-4 ${isUrdu ? 'flex-row-reverse' : 'flex-row'}`}>
+             <Link to="/" className="hover:text-black"><Home className="w-4 h-4" /></Link>
+             <span>/</span>
+             <span className="font-bold text-black">{t('فتاویٰ جات', 'Fatwas')}</span>
+             {selectedCategory !== 'All' && (
+                 <>
+                    <span>/</span>
+                    <span>{selectedCategory}</span>
+                 </>
+             )}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Filters Sidebar */}
-          <div className="lg:col-span-1 space-y-6">
-            <div className="bg-white p-5 rounded-lg border border-gray-200 shadow-sm">
-              <h3 className="font-bold text-gray-700 mb-4 flex items-center">
-                <Filter className="w-4 h-4 mr-2" /> Categories
-              </h3>
-              <div className="space-y-2">
-                <button
-                  onClick={() => setSelectedCategory('All')}
-                  className={`block w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
-                    selectedCategory === 'All' 
-                      ? 'bg-primary-50 text-primary-700 font-medium' 
-                      : 'text-gray-600 hover:bg-gray-50'
-                  }`}
-                >
-                  All Categories
-                </button>
-                {CATEGORIES.map(cat => (
-                  <button
-                    key={cat}
-                    onClick={() => setSelectedCategory(cat)}
-                    className={`block w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
-                      selectedCategory === cat 
-                        ? 'bg-primary-50 text-primary-700 font-medium' 
-                        : 'text-gray-600 hover:bg-gray-50'
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
+        <div className={`flex flex-col gap-8 ${isUrdu ? 'lg:flex-row-reverse' : 'lg:flex-row'}`}>
 
-          {/* Main Content */}
-          <div className="lg:col-span-3">
+          {/* MAIN CONTENT */}
+          <div className="lg:w-3/4">
+            
+            <div className={`flex justify-between items-center mb-6 ${isUrdu ? 'flex-row-reverse' : 'flex-row'}`}>
+                <h1 className={`text-2xl font-bold text-black ${isUrdu ? 'border-r-4 pr-3' : 'border-l-4 pl-3'} border-gray-600`}>
+                    {selectedCategory === 'All' ? t('تمام فتاویٰ', 'All Fatwas') : selectedCategory}
+                </h1>
+                <span className="text-sm text-gray-500 font-sans bg-gray-100 px-2 py-1 rounded">
+                    Total: {filteredFatwas.length}
+                </span>
+            </div>
+
             {/* Search Bar */}
-            <form onSubmit={handleSearch} className="mb-6 relative z-10">
-              <div className="relative flex shadow-sm rounded-md">
+            <form onSubmit={handleSearch} className="mb-8 relative z-10 bg-gray-50 p-4 rounded border border-gray-200">
+              <div className={`relative flex shadow-sm rounded-md ${isUrdu ? 'flex-row-reverse' : 'flex-row'}`}>
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => { if (suggestions.length > 0) setShowSuggestions(true); }}
                   onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                  placeholder="Search keywords (e.g., Zakat, Prayer, Travel)..."
-                  className="block w-full pl-4 pr-12 py-3 border border-gray-300 rounded-l-lg focus:ring-primary-500 focus:border-primary-500"
-                  autoComplete="off"
+                  placeholder={t('...الفاظ لکھ کر تلاش کریں', 'Search keywords...')}
+                  className={`block w-full px-4 py-2 border border-gray-300 ${isUrdu ? 'rounded-r text-right' : 'rounded-l text-left'} focus:ring-black focus:border-black text-lg`}
+                  dir={isUrdu ? 'rtl' : 'ltr'}
                 />
                 <button 
                   type="submit"
                   disabled={isSearchingAI}
-                  className="inline-flex items-center px-6 py-3 border border-l-0 border-transparent text-base font-medium rounded-r-lg shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none disabled:bg-primary-400"
+                  className={`inline-flex items-center px-6 py-2 border border-transparent text-base font-medium ${isUrdu ? 'rounded-l border-l-0' : 'rounded-r border-r-0'} text-white bg-black hover:bg-gray-800 focus:outline-none transition-all`}
                 >
-                  {isSearchingAI ? (
-                    <Sparkles className="animate-spin w-5 h-5" />
-                  ) : (
-                    <Search className="w-5 h-5" />
-                  )}
+                  {isSearchingAI ? <Sparkles className="animate-spin w-5 h-5" /> : t('تلاش', 'Search')}
                 </button>
 
-                {/* Suggestions Dropdown */}
                 {showSuggestions && suggestions.length > 0 && (
-                  <div className="absolute top-full left-0 right-16 mt-1 bg-white border border-gray-200 rounded-md shadow-lg overflow-hidden z-50">
-                    <div className="bg-gray-50 px-3 py-1 text-xs text-gray-500 font-medium border-b border-gray-100 flex items-center">
-                      <Sparkles className="w-3 h-3 mr-1 text-purple-500" />
-                      AI Suggestions
-                    </div>
+                  <div className="absolute top-full right-0 w-full mt-1 bg-white border border-gray-200 rounded shadow-lg overflow-hidden z-50">
                     {suggestions.map((suggestion, index) => (
                       <div
                         key={index}
                         onClick={() => handleSuggestionClick(suggestion)}
-                        className="px-4 py-3 hover:bg-primary-50 cursor-pointer text-sm text-gray-700 border-b border-gray-50 last:border-0 flex items-center transition-colors"
+                        className={`px-4 py-2 hover:bg-gray-100 cursor-pointer border-b border-gray-50 text-gray-700 ${isUrdu ? 'text-right' : 'text-left'}`}
                       >
-                        <Search className="w-3 h-3 mr-3 text-gray-400" />
                         {suggestion}
                       </div>
                     ))}
                   </div>
                 )}
               </div>
-              
-              {isSearchingAI && <p className="text-xs text-primary-600 mt-2 flex items-center"><Sparkles className="w-3 h-3 mr-1"/> AI is optimizing results...</p>}
             </form>
 
-            {/* Results */}
-            {filteredFatwas.length > 0 ? (
-              <div className="space-y-4">
-                {filteredFatwas.map(fatwa => (
-                  <FatwaCard key={fatwa.id} fatwa={fatwa} />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-20 bg-white rounded-lg border border-dashed border-gray-300">
-                <div className="mx-auto h-12 w-12 text-gray-300 mb-3">
-                  <Search className="h-full w-full" />
+            <div className="bg-white">
+              {currentItems.length > 0 ? (
+                <div className="flex flex-col">
+                  {currentItems.map(fatwa => (
+                    <FatwaCard key={fatwa.id} fatwa={fatwa} />
+                  ))}
                 </div>
-                <h3 className="mt-2 text-sm font-medium text-gray-900">No fatwas found</h3>
-                <p className="mt-1 text-sm text-gray-500">Try adjusting your search or category filter.</p>
-              </div>
+              ) : (
+                <div className="text-center py-12 border border-dashed border-gray-300 rounded bg-gray-50">
+                  <h3 className="text-lg font-bold text-gray-900">{t('کوئی فتویٰ نہیں ملا', 'No fatwas found')}</h3>
+                </div>
+              )}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+                <div className="flex justify-center mt-8 gap-2 font-sans dir-ltr">
+                    <button 
+                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                        disabled={currentPage === 1}
+                        className="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50"
+                    >
+                        Prev
+                    </button>
+                    {[...Array(totalPages)].map((_, i) => (
+                        <button
+                            key={i}
+                            onClick={() => setCurrentPage(i + 1)}
+                            className={`px-3 py-1 border rounded ${currentPage === i + 1 ? 'bg-black text-white border-black' : 'hover:bg-gray-100'}`}
+                        >
+                            {i + 1}
+                        </button>
+                    ))}
+                    <button 
+                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        disabled={currentPage === totalPages}
+                        className="px-3 py-1 border rounded hover:bg-gray-100 disabled:opacity-50"
+                    >
+                        Next
+                    </button>
+                </div>
             )}
           </div>
+
+          {/* SIDEBAR */}
+          <div className="lg:w-1/4">
+            <div className="bg-white border border-gray-200 rounded shadow-sm sticky top-20">
+              <div className={`bg-gray-800 text-white px-4 py-3 rounded-t ${isUrdu ? 'text-right' : 'text-left'}`}>
+                <h3 className={`font-bold text-lg flex items-center ${isUrdu ? 'justify-end' : 'justify-start'} gap-2`}>
+                    {t('فتاویٰ کے ابواب', 'Categories')} <Filter className="w-4 h-4" />
+                </h3>
+              </div>
+              <div className="divide-y divide-gray-100">
+                {CATEGORIES.map(cat => (
+                  <button
+                    key={cat.id}
+                    onClick={() => {
+                        setSelectedCategory(cat.labelUrdu);
+                        window.scrollTo(0, 0);
+                    }}
+                    className={`w-full px-4 py-3 transition-colors flex items-center justify-between group ${
+                      selectedCategory === cat.labelUrdu || (selectedCategory === 'All' && cat.id === 'all')
+                        ? 'bg-gray-100 text-black font-bold' 
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-black'
+                    } ${isUrdu ? 'flex-row-reverse text-right' : 'flex-row text-left'}`}
+                  >
+                    <span>{isUrdu ? cat.labelUrdu : cat.labelEnglish}</span>
+                    {selectedCategory === cat.labelUrdu && <ChevronLeft className={`w-4 h-4 ${isUrdu ? '' : 'rotate-180'}`} />}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
